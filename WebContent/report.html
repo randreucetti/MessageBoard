@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Report</title>
+</head>
+<body>
+<h1>Student Details</h1>
+<ul>
+	<li><b>Name: </b>Ross Andreucetti</li>
+	<li><b>Student Number: </b>12211742</li>
+</ul>
+<h1>Login Details</h1>
+In order to login in I have created an account with the following login details:
+<ul>
+	<li><b>Username: </b> examiner</li>
+	<li><b>Password: </b> pass </li>
+</ul>
+<b>HOWEVER </b>I recommenend for the sake of enjoying the applications full features you register for your own account while correcting.
+
+<h1>Application Features</h1>
+Although most features are apparent I am going to highlight them below:
+<ul>
+<li><b>Registration: </b>Users can register for accounts which they can log into to post new topics and reply to existing ones.</li>
+<li><b>Login: </b> Users are required to login before posting messages.</li>
+<li><b>Password Encryption: </b>Passwords are encrypted before they are sent to the database where their hashed md5 value is stored.</li>
+<li><b>Password Recovery: </b>If a user forgets his/her password it can be reset by using the security question created on registration.</li>
+<li><b>Change Passwords: </b>Users passwords can be changed if desired.</li>
+<li><b>Differient Forums: </b>Different forums are presente for different sports categories.</li>
+<li><b>Topics: </b>Different topics about subjects can be created within forums.</li>
+<li><b>Replies: </b>Users can reply to topics.</li>
+<li><b>User Profile: </b>Users profiles can be viewed and accoun stats and their posts are displayed.</li>
+<li><b>Additional Info Pages: </b>An FAQ, charter and info page can be accesssed via the footer.</li>
+<li><b>SQL injection prevention: </b>Prepared statements are used to prevent SQL injection.</li>
+<li><b>HTML injection prevention: </b>HTML tags the are inputted by users when posting messages is handled correctly so it does not interfere with existing html on page.</li>
+<li><b>Form Validation: </b> FormValidator class ensures that usernames, passwords etc meet certain criteria.</li>
+
+</ul>
+
+<h1>SQL Code Used</h1>
+The SQL codes I have below is what is used to create the tables that I needed and to create the sequences/triggers that are used.
+<br />
+<pre>
+	CREATE TABLE ANDREUR_USERS
+	(
+		USERNAME VARCHAR(30) NOT NULL,
+		PASSWORD VARCHAR(30) NOT NULL,
+		QUESTION VARCHAR(30) NOT NULL,
+		ANSWER VARCHAR(30) NOT NULL,
+		PRIMARY KEY(USERNAME))
+	
+	CREATE TABLE ANDREUR_TOPICS
+	(	
+		ID INTEGER NOT NULL,
+		TITLE VARCHAR(30) NOT NULL,
+		USERNAME VARCHAR(30),
+		CREATED DATE NOT NULL,
+		FORUM VARCHAR(30) NOT NULL,
+		PRIMARY KEY(ID),
+		CONSTRAINT ANDREUR_TOPICS_CONST1
+	             FOREIGN KEY (USERNAME)
+	             REFERENCES ANDREUR_USERS
+	             ON DELETE SET NULL)   
+	//sequence
+	CREATE SEQUENCE ANDREUR_TOPIC_SEQ START WITH 1 INCREMENT BY 1 NOMAXVALUE
+	
+	//trigger
+	CREATE TRIGGER ANDREUR_TOPIC_TRIGGER
+	BEFORE INSERT ON ANDREUR_TOPICS
+	FOR EACH ROW
+	BEGIN 
+		SELECT ANDREUR_TOPIC_SEQ.nextval into :new.id from dual;
+		END;
+	
+	CREATE TABLE ANDREUR_POSTS
+	(	
+		ID INTEGER NOT NULL,
+		CONTENT CLOB NOT NULL,
+		USERNAME VARCHAR(30),
+		TOPIC_ID INTEGER NOT NULL,
+		CREATED DATE NOT NULL,
+		PRIMARY KEY(ID)
+		CONSTRAINT ANDREUR_POSTS_CONST1
+	             FOREIGN KEY (USERNAME)
+	             REFERENCES ANDREUR_USERS
+	             ON DELETE SET NULL,   
+		CONSTRAINT ANDREUR_POSTS_CONST2
+	             FOREIGN KEY (TOPIC_ID)
+	             REFERENCES ANDREUR_TOPICS
+	             ON DELETE CASCADE)  
+	//sequence
+	CREATE SEQUENCE ANDREUR_POST_SEQ START WITH 1 INCREMENT BY 1 NOMAXVALUE
+	
+	//trigger
+	CREATE TRIGGER ANDREUR_POST_TRIGGER
+	BEFORE INSERT ON ANDREUR_POSTS
+	FOR EACH ROW
+	BEGIN 
+		SELECT ANDREUR_POST_SEQ.nextval into :new.id from dual;
+		END;
+</pre>
+
+
+</body>
+</html>
